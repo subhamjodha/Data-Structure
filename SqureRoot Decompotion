@@ -1,0 +1,91 @@
+#include<bits/stdc++.h>
+#define MAX 10000
+#define sqrtMAX 100
+using namespace std;
+int a[MAX],M[sqrtMAX];
+int n,sqrtn;
+
+int limit()
+{
+    return INT_MAX;
+}
+int merge(int x,int y)
+{
+    return min(x,y);
+}
+
+void build()
+{
+    int x = limit();
+
+    for(int i=0;i<n;i++)
+    {
+        x=merge(x,a[i]);
+        if(i%sqrtn==(sqrtn-1))
+        {
+            M[i/sqrtn]=x;
+            x=limit();
+        }
+    }
+}
+
+void update(int i,int x)
+{
+    if(i<0 && i>n-1)
+        return ;
+    a[i]=x;
+    M[i/sqrtn]=merge(M[i/sqrtn],x);
+}
+
+int query(int l,int r)
+{
+    int res= limit();
+
+    for(int i=l;i<=r && i<n;)
+    {
+        if(i%sqrtn==0 && i+sqrtn-1<=r)
+        {
+            res = merge(res,M[i/sqrtn]);
+            i+=sqrtn;
+        }
+        else
+        {
+            res=merge(res,a[i]);
+            i++;
+        }
+    }
+
+    return res;
+}
+
+int main()
+{
+    scanf("%d",&n);
+    sqrtn=sqrt(n);
+
+    for(int i=0;i<n;i++)
+        scanf("%d",&a[i]);
+    build();
+
+    for(int i=0;i<n;i++)
+        printf("%d ",i);
+    printf("\n");
+
+    for(int i=0;i<n;i++)
+        printf("%d ",a[i]);
+    printf("\n");
+
+    for(int i=0;i<sqrtn;i++)
+        printf("%d ",M[i]);
+    printf("\n");
+    int q,l,r;
+
+    scanf("%d",&q);
+
+    while(q--)
+    {
+        scanf("%d %d",&l,&r);
+
+        printf("%d\n",query(l,r));
+    }
+}
