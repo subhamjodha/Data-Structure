@@ -1,0 +1,316 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+typedef struct node
+{
+    int data;
+    int count;
+    struct node *l,*r;
+} node;
+node *root=NULL;
+
+node *getnode(int data)
+{
+    node *temp = (node*)malloc(sizeof(node));
+    temp->data=data;
+    temp->l=temp->r=NULL;
+    temp->count=1;
+
+    return temp;
+}
+
+node *MinNode(node *root)
+{
+    if(root==NULL)
+        return NULL;
+    if(root->l==NULL)
+        return root;
+    return MinNode(root->l);
+}
+
+node *MaxNode(node *root)
+{
+    if(root==NULL)
+        return NULL;
+    if(root->r==NULL)
+        return root;
+    return MaxNode(root->r);
+}
+
+node *insertion(node *root,int data)
+{
+    if(root==NULL)
+    {
+        root=getnode(data);
+    }
+    else
+    {
+        if(root->data==data)
+            root->count++;
+        else if(data>root->data)
+            root->r=insertion(root->r,data);
+        else
+            root->l=insertion(root->l,data);
+    }
+
+    return root;
+}
+
+void insertion()
+{
+    int data;
+    printf("Enter The Data : ");
+    scanf("%d",&data);
+    root = insertion(root,data);
+}
+
+node *deletion(node *root,int data)
+{
+    if(root==NULL)
+        return NULL;
+    if(data<root->data)
+        root->l=deletion(root->l,data);
+    else if(data>root->data)
+        root->r=deletion(root->r,data);
+    else
+    {
+        if(root->l==NULL && root->r==NULL) ////Have Right Child Only
+        {
+            free(root);
+            return NULL;
+        }
+        else if(root->l==NULL) //Have Right Child Only
+        {
+            node *temp = root->r;
+            free(root);
+            return temp;
+        }
+        else if(root->r==NULL) //Have Left Child Only
+        {
+            node *temp = root->l;
+            free(root);
+            return temp;
+        }
+        else  //Have Both Child
+        {
+            node *temp = MinNode(root->r); //Inorder successor (We Can Also Use inorder predecessor)
+            root->data= temp->data;
+            root->count=temp->count;
+
+            root->r = deletion(root->r,temp->data);
+        }
+    }
+
+    return root;
+}
+
+void deletion()
+{
+    int data;
+    printf("Enter Data To Delete : ");
+    scanf("%d",&data);
+    root=deletion(root,data);
+}
+
+node *creation(node *root)
+{
+    int data;
+    printf("Enter The Data(-1 to Stop) : ");
+    while(1)
+    {
+        scanf("%d",&data);
+        if(data==-1)
+            break;
+        root =insertion(root,data);
+    }
+
+    return root;
+}
+
+node *search(node *root,int data)
+{
+    if(root==NULL)
+        return NULL;
+    if(root->data==data)
+        return root;
+    else if(data>root->data)
+        return search(root->r,data);
+    else
+        return search(root->l,data);
+}
+
+void search()
+{
+    int data;
+    printf("Enter The Data : ");
+    scanf("%d",&data);
+    if(search(root,data)!=NULL)
+        printf("Element Is Present\n");
+    else
+        printf("Element Is Not Present\n");
+}
+
+node *lca(node *root,int u,int v)
+{
+    if(root==NULL)
+        return NULL;
+    if(u>root->data && v>root->data)
+        return lca(root->r,u,v);
+    if(u<root->data && v<root->data)
+        return lca(root->l,u,v);
+    return root;
+}
+
+void lca()
+{
+    int u,v;
+    do
+    {
+        printf("Enter The First Value : ");
+        scanf("%d",&u);
+    }
+    while(search(root,u)==NULL);
+
+    do
+    {
+        printf("Enter The Second Value : ");
+        scanf("%d",&v);
+    }
+    while(search(root,v)==NULL);
+
+    printf("LCA Of %d And %d Is : %d\n",u,v,lca(root,u,v)->data);
+}
+
+void inorder(node *root)
+{
+    if(root!=NULL)
+    {
+        inorder(root->l);
+        printf("%d ",root->data);
+        inorder(root->r);
+    }
+}
+
+void preorder(node *root)
+{
+    if(root!=NULL)
+    {
+        printf("%d ",root->data);
+        preorder(root->l);
+        preorder(root->r);
+    }
+}
+
+void postorder(node *root)
+{
+    if(root!=NULL)
+    {
+        postorder(root->l);
+        postorder(root->r);
+        printf("%d ",root->data);
+    }
+}
+
+void levelorder(node *root)
+{
+    if(root==NULL)
+        return;
+    queue<node*> q;
+    q.push(root);
+    while(!q.empty())
+    {
+        printf("%d ",q.front()->data);
+
+        if(q.front()->l!=NULL)
+            q.push(q.front()->l);
+        if(q.front()->r!=NULL)
+            q.push(q.front()->r);
+
+        q.pop();
+    }
+}
+int main()
+{
+    int option;
+
+    do
+    {
+        printf("\n\n Enter 1 For Creation\n");
+        printf(" Enter 2 For Insertion\n");
+        printf(" Enter 3 For Deletion\n");
+        printf(" Enter 4 For Search\n");
+        printf(" Enter 5 For LCA\n");
+        printf(" Enter 6 For Inorder\n");
+        printf(" Enter 7 For Preorder\n");
+        printf(" Enter 8 For Postorder\n");
+        printf(" Enter 9 For levelorder\n");
+        printf(" Enter 10 For EXIT!!!!!!\n");
+
+        scanf("%d",&option);
+
+        switch(option)
+        {
+        case 1:
+        {
+            root = creation(root);
+            break;
+        }
+        case 2:
+        {
+            insertion();
+            break;
+        }
+        case 3:
+        {
+            deletion();
+            break;
+        }
+        case 4:
+        {
+            search();
+            break;
+        }
+        case 5:
+        {
+            lca();
+            break;
+        }
+        case 6:
+        {
+            inorder(root);
+            printf("\n");
+            break;
+        }
+        case 7:
+        {
+            preorder(root);
+            printf("\n");
+            break;
+        }
+        case 8:
+        {
+            postorder(root);
+            printf("\n");
+            break;
+        }
+        case 9:
+        {
+            levelorder(root);
+            printf("\n");
+            break;
+        }
+        case 10:
+        {
+            break;
+        }
+        default :
+        {
+            printf("Wrong Choice TRY AGAIN !!!!\n");
+            break;
+        }
+        }
+    }
+    while(option!=10);
+
+    return 0;
+}
