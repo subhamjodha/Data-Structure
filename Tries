@@ -1,0 +1,124 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+typedef struct node
+{
+    bool isLeaf;
+    struct node* child[26];
+} node;
+
+node *getnode()
+{
+    node *temp = (node*)malloc(sizeof(node));
+    for(int i=0; i<26; i++)
+        temp->child[i]=NULL;
+    temp->isLeaf=false;
+    return temp;
+}
+node *root;
+node *insertion(node *root,char s[])
+{
+    int n = strlen(s);
+    node *temp = root;
+    for(int i=0; i<n; i++)
+    {
+        if(temp->child[s[i]-97]==NULL)
+            temp->child[s[i]-97]=getnode();
+        temp=temp->child[s[i]-97];
+    }
+
+    temp->isLeaf=true;
+}
+
+void insertion()
+{
+    char s[100];
+    printf("Enter The Word To Insert : ");
+    scanf("%s",s);
+
+    insertion(root,s);
+}
+
+bool search(node *root,char s[])
+{
+    int n = strlen(s);
+    node *temp = root;
+
+    for(int i=0;i<n;i++)
+    {
+        if(temp->child[s[i]-97]==NULL)
+            return 0;
+        temp = temp->child[s[i]-97];
+    }
+
+    if(temp->isLeaf)
+        return true;
+    return false;
+}
+
+void search()
+{
+    char s[100];
+    printf("Enter The Word To Search : ");
+    scanf("%s",s);
+
+    if(search(root,s))
+        printf("Element Is Present\n");
+    else
+        printf("Element Is Not Present\n");
+}
+
+void printall(node *root,string s)
+{
+    if(root->isLeaf)
+        cout<<s<<endl;
+    for(int i=0;i<26;i++)
+    {
+        if(root->child[i]!=NULL)
+            printall(root->child[i],s+(char)(i+97));
+    }
+}
+int main()
+{
+    root=getnode();
+    int option;
+
+    do
+    {
+        printf("\n\n Enter 1 For Insertion\n");
+        printf(" Enter 2 For search\n");
+        printf(" Enter 3 For Print all\n");
+        printf(" Enter 4 For EXIT!!!!\n");
+
+        scanf("%d",&option);
+
+        switch(option)
+        {
+        case 1:
+            {
+                insertion();
+                break;
+            }
+        case 2:
+            {
+                search();
+                break;
+            }
+        case 3:
+            {
+                printall(root,"");
+                break;
+            }
+        case 4:
+            {
+                break;
+            }
+        default:
+            {
+               printf("Wrong Choice TRY AGAIN!!!!\n");
+            }
+        }
+    }while(option!=5);
+
+    return 0;
+}
